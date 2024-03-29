@@ -12,7 +12,7 @@ class NetworkRepository {
   final http.Client httpClient = http.Client();
 
   String _endPoint(String endPoint) {
-    return "http://localhost:5000/v1/${endPoint}";
+    return "http://10.0.2.2:8000/v1/${endPoint}";
   }
 
   Map<String, String> _header = {

@@ -26,7 +26,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(Authenticated(uid: uid));
   }
 
-  Future<void> loggedOut(String uid) async {
+  Future<void> loggedOut() async {
     sharedPref.setUid("");
     emit(UnAuthenticated());
   }

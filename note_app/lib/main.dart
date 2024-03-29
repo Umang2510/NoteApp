@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
+            title: 'NoteApp',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               useMaterial3: true,
@@ -43,7 +43,11 @@ class MyApp extends StatelessWidget {
                 return BlocBuilder<AuthCubit, AuthState>(
                     builder: (context, authState) {
                   if (authState is Authenticated) {
-                    return HomePage();
+                    if (authState.uid == "") {
+                      return SignIn();
+                    } else {
+                      return HomePage(uid: authState.uid);
+                    }
                   } else {
                     return SignIn();
                   }

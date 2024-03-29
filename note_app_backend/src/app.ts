@@ -12,8 +12,8 @@ app.use(express.json());
 app.use(appLogger);
 app.use(express.urlencoded({ extended: false }));
 app.use("/v1/user", userRouter);
-const hostName = "localhost";
-const portNumber = 5000;
+const hostName = "0.0.0.0";
+const portNumber = 8000;
 
 app.listen(portNumber, hostName, async () => {
   await connectToDB();

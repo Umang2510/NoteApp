@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:note_app/cubit/auth/auth_cubit.dart';
 
 import '../routers/page_const.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final String uid;
+  const HomePage({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {
+    print(uid);
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
@@ -31,13 +35,18 @@ class HomePage extends StatelessWidget {
               SizedBox(
                 width: 10.w,
               ),
-              const Text("My Notes"),
+              Text("My Notes"),
             ],
           ),
           actions: [
-            const Icon(Icons.login),
+            InkWell(
+              child: Icon(Icons.logout),
+              onTap: () {
+                context.read<AuthCubit>().loggedOut();
+              },
+            ),
             SizedBox(width: 20.w),
-            const Icon(Icons.refresh),
+            Icon(Icons.refresh),
             SizedBox(width: 10.w)
           ],
         ),
