@@ -44,4 +44,32 @@ class NetworkRepository {
       throw serverException(errorMsg: json.decode(response.body)['response']);
     }
   }
+
+  Future<UserModel> myProfile(UserModel user) async {
+    final response = await httpClient.get(
+        Uri.parse(_endPoint("user/myprofile?uid=${user.uid}")),
+        headers: _header);
+    if (response.statusCode == 200) {
+      final userModel =
+          UserModel.fromJSON(json.decode(response.body)['response']);
+      return userModel;
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
+
+  Future<UserModel> updateProfile(UserModel user) async {
+    final encodedParam = json.encode(user.toJson());
+    final response = await httpClient.put(
+        Uri.parse(_endPoint("user/updateprofile")),
+        body: encodedParam,
+        headers: _header);
+    if (response.statusCode == 200) {
+      final userModel =
+          UserModel.fromJSON(json.decode(response.body)['response']);
+      return userModel;
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
 }

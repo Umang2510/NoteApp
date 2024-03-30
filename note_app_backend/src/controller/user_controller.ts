@@ -70,4 +70,42 @@ export class userController {
       });
     }
   }
+
+  static async myProfile(request: express.Request, response: express.Response) {
+    let db = getDb();
+    let usersCollection = db.collection("users");
+    const uid = request.query.uid;
+
+    const userData = await usersCollection
+      .find({ _id: new ObjectId(uid!.toString()) })
+      .toArray();
+    response.status(200).json({
+      status: "Success",
+      response: userData[0],
+    });
+  }
+
+  static async updateProfile(
+    request: express.Request,
+    response: express.Response
+  ) {
+    let db = getDb();
+    let usersCollection = db.collection("users");
+    const user: User = request.body;
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    const updateUserObject = {
+      username: user.username,
+      password: user.password,
+    };
+
+    const updateUserInfo = await usersCollection.updateOne(
+      { _id: new ObjectId(user.uid) },
+      { $set: updateUserObject }
+    );
+    response.status(200).json({
+      Status: "Success",
+      response: updateUserInfo,
+    });
+  }
 }

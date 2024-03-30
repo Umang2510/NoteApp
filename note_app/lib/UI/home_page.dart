@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, PageConst.profilePpage);
+                  Navigator.pushNamed(context, PageConst.profilePpage, arguments: uid);
                 },
                 child: const Icon(Icons.person),
               ),

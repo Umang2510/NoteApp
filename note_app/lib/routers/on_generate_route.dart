@@ -21,7 +21,14 @@ class OnGenerateRoute {
         }
       case PageConst.profilePpage:
         {
-          return materialPageBuilder(widget: ProfilePage());
+          if (args is String) {
+            return materialPageBuilder(
+                widget: ProfilePage(
+              uid: args,
+            ));
+          } else {
+            return materialPageBuilder(widget: ErroePage());
+          }
         }
       case PageConst.addNote:
         {
