@@ -32,7 +32,10 @@ class OnGenerateRoute {
         }
       case PageConst.addNote:
         {
-          return materialPageBuilder(widget: AddNotePage());
+          if(args is String)
+            return materialPageBuilder(widget: AddNotePage(uid: args));
+          else  
+            return materialPageBuilder(widget: ErroePage());
         }
       case PageConst.updateNote:
         {

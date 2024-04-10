@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import '../models/note_model.dart';
 import '../models/user_model.dart';
 
 class serverException implements Exception {
@@ -68,6 +69,31 @@ class NetworkRepository {
       final userModel =
           UserModel.fromJSON(json.decode(response.body)['response']);
       return userModel;
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
+
+  Future<List<NoteModel>> getMyNotes(NoteModel note) async {
+    final response = await httpClient.get(
+        Uri.parse(_endPoint("note/getmynotes?uid=${note.creatorId}")),
+        headers: _header);
+    if (response.statusCode == 200) {
+      List<dynamic> notes = json.decode(response.body)['response'];
+      final notesData = notes.map((item) => NoteModel.fromJson(item)).toList();
+
+      return notesData;
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
+
+  Future<void> addNote(NoteModel note) async {
+    final encodedParam = json.encode(note.toJson());
+    final response = await httpClient.post(Uri.parse(_endPoint("note/addnote")),
+        body: encodedParam, headers: _header);
+    if (response.statusCode == 200) {
+      print(response.body);
     } else {
       throw serverException(errorMsg: json.decode(response.body)['response']);
     }

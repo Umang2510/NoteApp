@@ -3,22 +3,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:note_app/cubit/auth/auth_cubit.dart';
+import '../../cubit/auth/auth_cubit.dart';
+import '../../cubit/note/note_cubit.dart';
+import '../../models/note_model.dart';
 
 import '../routers/page_const.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String uid;
   const HomePage({super.key, required this.uid});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    context.read<NoteCubit>().getMyNotes(NoteModel(creatorId: widget.uid));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print(uid);
     return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, PageConst.addNote);
+            Navigator.pushNamed(context, PageConst.addNote, arguments: widget.uid);
           },
           child: Icon(Icons.add),
         ),
@@ -28,7 +40,8 @@ class HomePage extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, PageConst.profilePpage, arguments: uid);
+                  Navigator.pushNamed(context, PageConst.profilePpage,
+                      arguments: widget.uid);
                 },
                 child: const Icon(Icons.person),
               ),
@@ -46,34 +59,71 @@ class HomePage extends StatelessWidget {
               },
             ),
             SizedBox(width: 20.w),
-            Icon(Icons.refresh),
+            InkWell(
+              child: Icon(Icons.refresh),
+              onTap: () {
+                context
+                    .read<NoteCubit>()
+                    .getMyNotes(NoteModel(creatorId: widget.uid));
+              },
+            ),
             SizedBox(width: 10.w)
           ],
         ),
-        body: ListView.builder(
-          itemBuilder: ((context, index) {
-            return Card(
-              child: ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, PageConst.updateNote);
-                },
-                title: Text("Title"),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Description"),
-                    SizedBox(height: 10.h),
-                    Text(DateFormat("dd MMMM yyyy hh:mm a")
-                        .format(DateTime.now())),
-                  ],
-                ),
-                trailing: Icon(Icons.delete),
-              ),
-            );
-          }),
-          itemCount: 10,
-        ),
+        body: BlocBuilder<NoteCubit, NoteState>(builder: (context, state) {
+          if (state is NoteLoaded) {
+            final notes = state.notes;
+            return notes.isEmpty
+                ? _addNoteMessageWidget(context)
+                : ListView.builder(
+                    itemBuilder: ((context, index) {
+                      final note = notes[index];
+                      return Card(
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.pushNamed(context, PageConst.updateNote);
+                          },
+                          title: Text("${note.title}"),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("${note.description}"),
+                              SizedBox(height: 10.h),
+                              Text(DateFormat("dd MMMM yyyy hh:mm a").format(
+                                  DateTime.fromMicrosecondsSinceEpoch(
+                                      note.createAt!.toInt()))),
+                            ],
+                          ),
+                          trailing: Icon(Icons.delete),
+                        ),
+                      );
+                    }),
+                    itemCount: notes.length,
+                  );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }),
       ),
     );
+  }
+
+  _addNoteMessageWidget(context) {
+    return Center(
+        child: Column(
+      children: [
+        Text(
+          "Add Notes",
+          style: TextStyle(
+              fontSize: 30,
+              color: Theme.of(context)
+                  .colorScheme
+                  .inversePrimary
+                  .withOpacity(0.5)),
+        )
+      ],
+      mainAxisAlignment: MainAxisAlignment.center,
+    ));
   }
 }
