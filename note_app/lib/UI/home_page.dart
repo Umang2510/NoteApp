@@ -30,7 +30,8 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, PageConst.addNote, arguments: widget.uid);
+            Navigator.pushNamed(context, PageConst.addNote,
+                arguments: widget.uid);
           },
           child: Icon(Icons.add),
         ),
@@ -73,6 +74,10 @@ class _HomePageState extends State<HomePage> {
         body: BlocBuilder<NoteCubit, NoteState>(builder: (context, state) {
           if (state is NoteLoaded) {
             final notes = state.notes;
+            notes.sort((a, b) => DateTime.fromMillisecondsSinceEpoch(
+                    b.createAt!.toInt())
+                .compareTo(
+                    DateTime.fromMillisecondsSinceEpoch(a.createAt!.toInt())));
             return notes.isEmpty
                 ? _addNoteMessageWidget(context)
                 : ListView.builder(
@@ -81,7 +86,8 @@ class _HomePageState extends State<HomePage> {
                       return Card(
                         child: ListTile(
                           onTap: () {
-                            Navigator.pushNamed(context, PageConst.updateNote);
+                            Navigator.pushNamed(context, PageConst.updateNote,
+                                arguments: note);
                           },
                           title: Text("${note.title}"),
                           subtitle: Column(
@@ -94,7 +100,18 @@ class _HomePageState extends State<HomePage> {
                                       note.createAt!.toInt()))),
                             ],
                           ),
-                          trailing: Icon(Icons.delete),
+                          trailing: InkWell(
+                            child: Icon(Icons.delete),
+                            onTap: () {
+                              context
+                                  .read<NoteCubit>()
+                                  .deleteNote(NoteModel(noteId: note.noteId))
+                                  .then((value) => context
+                                      .read<NoteCubit>()
+                                      .getMyNotes(
+                                          NoteModel(creatorId: widget.uid)));
+                            },
+                          ),
                         ),
                       );
                     }),

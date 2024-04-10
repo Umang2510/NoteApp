@@ -98,4 +98,28 @@ class NetworkRepository {
       throw serverException(errorMsg: json.decode(response.body)['response']);
     }
   }
+
+    Future<void> updateNote(NoteModel note) async {
+    final encodedParam = json.encode(note.toJson());
+    final response = await httpClient.put(Uri.parse(_endPoint("note/updatenote")),
+        body: encodedParam, headers: _header);
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
+
+  Future<void> deleteNote(NoteModel note) async {
+    final encodedParam = json.encode(note.toJson());
+    final response = await httpClient.delete(
+        Uri.parse(_endPoint("note/deletenote")),
+        body: encodedParam,
+        headers: _header);
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw serverException(errorMsg: json.decode(response.body)['response']);
+    }
+  }
 }

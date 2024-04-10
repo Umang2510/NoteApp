@@ -26,4 +26,20 @@ class NoteCubit extends Cubit<NoteState> {
       emit(NoteFailure());
     }
   }
+
+  Future<void> updateNote(NoteModel note) async {
+    try {
+      await networkRepository.updateNote(note);
+    } catch (_) {
+      emit(NoteFailure());
+    }
+  }
+
+  Future<void> deleteNote(NoteModel note) async {
+    try {
+      await networkRepository.deleteNote(note);
+    } catch (_) {
+      emit(NoteFailure());
+    }
+  }
 }

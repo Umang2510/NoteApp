@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/models/note_model.dart';
 
 import '/UI/update_note_page.dart';
 import '/UI/add_note_page.dart';
@@ -32,14 +33,17 @@ class OnGenerateRoute {
         }
       case PageConst.addNote:
         {
-          if(args is String)
+          if (args is String)
             return materialPageBuilder(widget: AddNotePage(uid: args));
-          else  
+          else
             return materialPageBuilder(widget: ErroePage());
         }
       case PageConst.updateNote:
         {
-          return materialPageBuilder(widget: UpdateNotePage());
+          if (args is NoteModel)
+            return materialPageBuilder(widget: UpdateNotePage(note: args));
+          else
+            return materialPageBuilder(widget: ErroePage());
         }
       default:
         return materialPageBuilder(widget: ErroePage());
